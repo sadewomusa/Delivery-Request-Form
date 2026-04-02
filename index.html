@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Delivery Request</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #002B5C;
+    --navy-deep: #001A3A;
+    --navy-mid: #003D7A;
+    --green: #5BBF3D;
+    --green-dark: #4AA832;
+    --green-glow: #6DD54E;
+    --slate: #64748B;
+    --slate-light: #94A3B8;
+    --surface: #F8FAFC;
+    --surface-2: #F1F5F9;
+    --border: #E2E8F0;
+    --white: #FFFFFF;
+    --text: #0F172A;
+    --text-secondary: #475569;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { 
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
+    background: var(--surface);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 50%, var(--navy-mid) 100%);
+    padding: 20px 20px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--green), var(--green-glow), var(--green));
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .logo-mark .icon {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .logo-mark .icon svg { width: 20px; height: 20px; }
+
+  .header-badge {
+    background: rgba(91,191,61,0.18);
+    color: var(--green-glow);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .header h1 {
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.3px;
+  }
+
+  .header p {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  /* ─── STEPPER ─── */
+  .stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 0;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .step-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    border: 2px solid var(--border);
+    color: var(--slate-light);
+    background: var(--white);
+    transition: all 0.3s ease;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .step-dot.active {
+    border-color: var(--green);
+    color: var(--white);
+    background: var(--green);
+    box-shadow: 0 0 0 4px rgba(91,191,61,0.15);
+  }
+
+  .step-dot.done {
+    border-color: var(--green);
+    color: var(--white);
+    background: var(--green);
+  }
+
+  .step-line {
+    width: 48px; height: 2px;
+    background: var(--border);
+    transition: background 0.3s ease;
+  }
+
+  .step-line.done { background: var(--green); }
+
+  .step-label {
+    position: absolute;
+    top: 38px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--slate-light);
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+  }
+
+  .step-dot.active .step-label,
+  .step-dot.done .step-label { color: var(--navy); font-weight: 600; }
+
+  /* ─── FORM ─── */
+  .form-container {
+    padding: 0 16px 100px;
+  }
+
+  .form-section {
+    display: none;
+    animation: fadeSlide 0.35s ease;
+  }
+
+  .form-section.active { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title svg { width: 16px; height: 16px; color: var(--green); flex-shrink: 0; }
+
+  /* ─── INPUTS ─── */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+
+  .field label .req { color: var(--danger); margin-left: 2px; }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--navy-mid);
+    box-shadow: 0 0 0 3px rgba(0,43,92,0.08);
+  }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 6l3.5 4 3.5-4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* ─── TOGGLE ─── */
+  .toggle-group {
+    display: flex;
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--slate);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .toggle-btn.active {
+    background: var(--white);
+    color: var(--navy);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  /* ─── PICKUP / DELIVERY ADDRESS BLOCK ─── */
+  .address-block {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .address-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 18px;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .address-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 3px solid var(--green);
+    background: var(--white);
+  }
+
+  .address-dot.end {
+    border-color: var(--navy);
+    background: var(--navy);
+  }
+
+  .address-dash {
+    width: 2px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+
+  .address-fields { flex: 1; }
+
+  /* ─── SERVICE CARDS ─── */
+  .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .service-card {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--white);
+  }
+
+  .service-card:hover { border-color: var(--slate-light); }
+
+  .service-card.selected {
+    border-color: var(--green);
+    background: rgba(91,191,61,0.04);
+    box-shadow: 0 0 0 3px rgba(91,191,61,0.1);
+  }
+
+  .service-card .s-icon {
+    font-size: 28px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .service-card .s-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .service-card .s-desc {
+    font-size: 11px;
+    color: var(--slate);
+    margin-top: 2px;
+  }
+
+  /* ─── SUMMARY ─── */
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--surface-2);
+    gap: 12px;
+  }
+
+  .summary-row:last-child { border-bottom: none; }
+
+  .summary-label {
+    font-size: 12px;
+    color: var(--slate);
+    font-weight: 500;
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  .summary-value {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  /* ─── BOTTOM BAR ─── */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-back {
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    flex: 0.4;
+  }
+
+  .btn-back:active { background: var(--border); }
+
+  .btn-next {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .btn-next:active { background: var(--navy-deep); }
+
+  .btn-submit {
+    background: var(--green);
+    color: var(--white);
+  }
+
+  .btn-submit:active { background: var(--green-dark); }
+
+  .btn svg { width: 18px; height: 18px; }
+
+  /* ─── SUCCESS ─── */
+  .success-view {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+    animation: fadeSlide 0.4s ease;
+  }
+
+  .success-view.show { display: block; }
+
+  .success-check {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--green), var(--green-glow));
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(91,191,61,0.25);
+  }
+
+  .success-check svg { width: 36px; height: 36px; color: white; }
+
+  .success-view h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .success-view p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .ref-number {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: var(--surface-2);
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .success-actions {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .success-actions .btn { flex: unset; }
+
+  /* ─── CHECKBOX / RADIO ─── */
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  .check-row input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--green);
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .check-row span {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ─── VALIDATION ─── */
+  .field.error input,
+  .field.error select {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+  }
+
+  .error-msg {
+    font-size: 11px;
+    color: var(--danger);
+    margin-top: 4px;
+    display: none;
+  }
+
+  .field.error .error-msg { display: block; }
+
+  /* ─── DATE/TIME ─── */
+  .field input[type="date"],
+  .field input[type="time"] {
+    min-height: 46px;
+  }
+
+  /* ─── DOCUMENT UPLOAD ─── */
+  .doc-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+    background: var(--white);
+  }
+
+  .doc-row:last-child { margin-bottom: 0; }
+
+  .doc-row.has-file {
+    border-color: var(--green);
+    background: rgba(91,191,61,0.03);
+  }
+
+  .doc-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .doc-icon svg { width: 18px; height: 18px; color: var(--navy); }
+
+  .doc-row.has-file .doc-icon {
+    background: rgba(91,191,61,0.12);
+  }
+
+  .doc-row.has-file .doc-icon svg { color: var(--green); }
+
+  .doc-info { flex: 1; min-width: 0; }
+
+  .doc-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .doc-status {
+    font-size: 11px;
+    color: var(--slate-light);
+    margin-top: 1px;
+  }
+
+  .doc-row.has-file .doc-status { color: var(--green-dark); }
+
+  .doc-upload-btn {
+    padding: 6px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    font-family: inherit;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .doc-upload-btn:active { background: var(--surface-2); }
+
+  .doc-row.has-file .doc-upload-btn {
+    border-color: var(--green);
+    color: var(--green-dark);
+  }
+
+  .doc-ref-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--text);
+    margin-top: 6px;
+    background: var(--surface);
+  }
+
+  .doc-ref-input:focus {
+    outline: none;
+    border-color: var(--navy-mid);
+  }
+
+  .doc-ref-input::placeholder { color: var(--slate-light); }
+
+  /* ─── HELPER ─── */
+  .helper-text {
+    font-size: 11px;
+    color: var(--slate-light);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (min-width: 480px) {
+    .form-container { max-width: 440px; margin: 0 auto; }
+    .bottom-bar > div { max-width: 440px; margin: 0 auto; display: flex; gap: 10px; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo-mark">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      GULFTAINER
+    </div>
+    <span class="header-badge">Delivery</span>
+  </div>
+  <h1>New Delivery Request</h1>
+  <p>Submit your shipment details in 4 easy steps</p>
+</div>
+
+<!-- STEPPER -->
+<div class="stepper">
+  <div class="step-item">
+    <div class="step-dot active" data-step="1">1<span class="step-label">Service</span></div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item">
+    <div class="step-dot" data-step="2">2<span class="step-label">Route</span></div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item">
+    <div class="step-dot" data-step="3">3<span class="step-label">Cargo</span></div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item">
+    <div class="step-dot" data-step="4">4<span class="step-label">Review</span></div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-container">
+
+  <!-- STEP 1: SERVICE TYPE -->
+  <div class="form-section active" data-section="1">
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Service Type
+      </div>
+      <div class="service-grid">
+        <div class="service-card selected" data-service="FCL" onclick="selectService(this)">
+          <span class="s-icon">📦</span>
+          <div class="s-name">FCL</div>
+          <div class="s-desc">Full Container</div>
+        </div>
+        <div class="service-card" data-service="LCL" onclick="selectService(this)">
+          <span class="s-icon">📋</span>
+          <div class="s-name">LCL</div>
+          <div class="s-desc">Less than Container</div>
+        </div>
+        <div class="service-card" data-service="Breakbulk" onclick="selectService(this)">
+          <span class="s-icon">🏗️</span>
+          <div class="s-name">Breakbulk</div>
+          <div class="s-desc">Project Cargo</div>
+        </div>
+        <div class="service-card" data-service="Express" onclick="selectService(this)">
+          <span class="s-icon">⚡</span>
+          <div class="s-name">Express</div>
+          <div class="s-desc">Priority Delivery</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Schedule
+      </div>
+      <div class="field">
+        <label>Preferred Pickup Date <span class="req">*</span></label>
+        <input type="date" id="pickupDate" required>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Time Window</label>
+          <select id="timeWindow">
+            <option value="morning">Morning (8–12)</option>
+            <option value="afternoon">Afternoon (12–5)</option>
+            <option value="evening">Evening (5–9)</option>
+            <option value="anytime">Anytime</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Priority</label>
+          <select id="priority">
+            <option value="standard">Standard</option>
+            <option value="urgent">Urgent</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: ROUTE -->
+  <div class="form-section" data-section="2">
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z"/></svg>
+        Pickup &amp; Delivery
+      </div>
+      <div class="address-block">
+        <div class="address-line">
+          <div class="address-dot"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dash"></div>
+          <div class="address-dot end"></div>
+        </div>
+        <div class="address-fields">
+          <div class="field">
+            <label>Pickup Location <span class="req">*</span></label>
+            <input type="text" id="pickupLocation" placeholder="Address, warehouse, or port name" required>
+          </div>
+          <div class="field" style="margin-top: 14px;">
+            <label>Delivery Location <span class="req">*</span></label>
+            <input type="text" id="deliveryLocation" placeholder="Destination address or facility" required>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        Contact Details
+      </div>
+      <div class="field">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="contactName" placeholder="Shipper / consignee name" required>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Phone <span class="req">*</span></label>
+          <input type="tel" id="contactPhone" placeholder="+971 XX XXX XXXX" required>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="contactEmail" placeholder="name@company.com">
+        </div>
+      </div>
+      <div class="field">
+        <label>Company / Reference</label>
+        <input type="text" id="companyRef" placeholder="Company name or PO number">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: CARGO DETAILS -->
+  <div class="form-section" data-section="3">
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        Cargo Information
+      </div>
+      <div class="field">
+        <label>Description of Goods <span class="req">*</span></label>
+        <input type="text" id="goodsDesc" placeholder="e.g., Automotive parts, electronics" required>
+      </div>
+      <div class="row-3">
+        <div class="field">
+          <label>Qty (Pieces)</label>
+          <input type="number" id="qty" placeholder="0" min="0">
+        </div>
+        <div class="field">
+          <label>Weight (kg)</label>
+          <input type="number" id="weight" placeholder="0" min="0">
+        </div>
+        <div class="field">
+          <label>Volume (CBM)</label>
+          <input type="number" id="volume" placeholder="0" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="field">
+        <label>Container Size</label>
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn active" onclick="toggleSelect(this)">20' GP</button>
+          <button type="button" class="toggle-btn" onclick="toggleSelect(this)">40' GP</button>
+          <button type="button" class="toggle-btn" onclick="toggleSelect(this)">40' HC</button>
+          <button type="button" class="toggle-btn" onclick="toggleSelect(this)">Other</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        Shipment References
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Container Number <span class="req">*</span></label>
+          <input type="text" id="containerNo" placeholder="e.g., MSCU1234567" style="text-transform:uppercase">
+        </div>
+        <div class="field">
+          <label>Token Number</label>
+          <input type="text" id="tokenNo" placeholder="Gate token / pass #">
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>BOE Number <span class="req">*</span></label>
+          <input type="text" id="boeNo" placeholder="Bill of Entry ref">
+        </div>
+        <div class="field">
+          <label>BL Number</label>
+          <input type="text" id="blNo" placeholder="Bill of Lading #">
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>DO Number</label>
+          <input type="text" id="doNo" placeholder="Delivery Order #">
+        </div>
+        <div class="field">
+          <label>Seal Number</label>
+          <input type="text" id="sealNo" placeholder="Container seal #">
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Vessel / Voyage</label>
+          <input type="text" id="vesselVoyage" placeholder="e.g., CMA CGM Marco Polo / 025E">
+        </div>
+        <div class="field">
+          <label>Shipping Line</label>
+          <select id="shippingLine">
+            <option value="">Select carrier</option>
+            <option value="MSC">MSC</option>
+            <option value="Maersk">Maersk</option>
+            <option value="CMA CGM">CMA CGM</option>
+            <option value="COSCO">COSCO</option>
+            <option value="Hapag-Lloyd">Hapag-Lloyd</option>
+            <option value="ONE">ONE</option>
+            <option value="Evergreen">Evergreen</option>
+            <option value="HMM">HMM</option>
+            <option value="Yang Ming">Yang Ming</option>
+            <option value="ZIM">ZIM</option>
+            <option value="PIL">PIL</option>
+            <option value="OOCL">OOCL</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>HS Code</label>
+        <input type="text" id="hsCode" placeholder="e.g., 8471.30 (optional)">
+        <p class="helper-text">Harmonized System code for customs classification</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Trade Documents
+      </div>
+
+      <div class="doc-row" id="docBOE">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Bill of Entry (BOE)</div>
+          <div class="doc-status">Not uploaded</div>
+        </div>
+        <label class="doc-upload-btn" for="boeFile">Upload
+          <input type="file" id="boeFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docBOE')">
+        </label>
+      </div>
+
+      <div class="doc-row" id="docBL">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Bill of Lading (BL)</div>
+          <div class="doc-status">Not uploaded</div>
+        </div>
+        <label class="doc-upload-btn" for="blFile">Upload
+          <input type="file" id="blFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docBL')">
+        </label>
+      </div>
+
+      <div class="doc-row" id="docDO">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Delivery Order (DO)</div>
+          <div class="doc-status">Not uploaded</div>
+        </div>
+        <label class="doc-upload-btn" for="doFile">Upload
+          <input type="file" id="doFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docDO')">
+        </label>
+      </div>
+
+      <div class="doc-row" id="docToken">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Token / Gate Pass</div>
+          <div class="doc-status">Not uploaded</div>
+        </div>
+        <label class="doc-upload-btn" for="tokenFile">Upload
+          <input type="file" id="tokenFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docToken')">
+        </label>
+      </div>
+
+      <div class="doc-row" id="docINV">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Commercial Invoice</div>
+          <div class="doc-status">Not uploaded</div>
+        </div>
+        <label class="doc-upload-btn" for="invFile">Upload
+          <input type="file" id="invFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docINV')">
+        </label>
+      </div>
+
+      <div class="doc-row" id="docPL">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Packing List</div>
+          <div class="doc-status">Not uploaded</div>
+        </div>
+        <label class="doc-upload-btn" for="plFile">Upload
+          <input type="file" id="plFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docPL')">
+        </label>
+      </div>
+
+      <div class="doc-row" id="docOther">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-name">Other Document</div>
+          <div class="doc-status">Certificate of Origin, MSDS, etc.</div>
+        </div>
+        <label class="doc-upload-btn" for="otherFile">Upload
+          <input type="file" id="otherFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'docOther')">
+        </label>
+      </div>
+
+      <p class="helper-text" style="margin-top:8px;">Accepted formats: PDF, JPG, PNG. Max 10MB per file.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Special Requirements
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="hazmat">
+        <span>Hazardous / DG Goods (IMDG Class)</span>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="tempControl">
+        <span>Temperature-controlled (reefer)</span>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="oversized">
+        <span>Oversized / Out-of-gauge cargo</span>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="customsClear">
+        <span>Customs clearance required</span>
+      </div>
+      <div class="field" style="margin-top:12px;">
+        <label>Additional Instructions</label>
+        <textarea id="instructions" placeholder="Stacking limits, handling notes, access restrictions..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: REVIEW -->
+  <div class="form-section" data-section="4">
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Request Summary
+      </div>
+      <div id="summaryContent"></div>
+    </div>
+
+    <div class="card">
+      <div class="check-row">
+        <input type="checkbox" id="termsAgree">
+        <span>I confirm the information above is accurate and agree to the standard delivery terms and conditions.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-view" id="successView">
+    <div class="success-check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Request Submitted</h2>
+    <p>Your delivery request has been received. Our operations team will confirm within 2 business hours.</p>
+    <div class="ref-number" id="refNumber">GT-240402-0001</div>
+    <div class="success-actions">
+      <button class="btn btn-next" onclick="resetForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Request
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar" id="bottomBar">
+  <button class="btn btn-back" id="btnBack" onclick="prevStep()" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </button>
+  <button class="btn btn-next" id="btnNext" onclick="nextStep()">
+    Continue
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+function handleDocUpload(input, rowId) {
+  const row = document.getElementById(rowId);
+  const status = row.querySelector('.doc-status');
+  if (input.files.length > 0) {
+    const file = input.files[0];
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File exceeds 10MB limit.');
+      input.value = '';
+      return;
+    }
+    row.classList.add('has-file');
+    status.textContent = file.name;
+    const btn = row.querySelector('.doc-upload-btn');
+    btn.childNodes[0].textContent = 'Replace ';
+  } else {
+    row.classList.remove('has-file');
+    status.textContent = 'Not uploaded';
+  }
+}
+
+function getUploadedDocs() {
+  const docs = [];
+  const docRows = [
+    { id: 'docBOE', name: 'BOE' },
+    { id: 'docBL', name: 'BL' },
+    { id: 'docDO', name: 'DO' },
+    { id: 'docToken', name: 'Token/Gate Pass' },
+    { id: 'docINV', name: 'Invoice' },
+    { id: 'docPL', name: 'Packing List' },
+    { id: 'docOther', name: 'Other' },
+  ];
+  docRows.forEach(d => {
+    const el = document.getElementById(d.id);
+    if (el && el.classList.contains('has-file')) {
+      docs.push(d.name + ' ✓');
+    }
+  });
+  return docs;
+}
+
+function selectService(el) {
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleSelect(el) {
+  el.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updateStepper() {
+  document.querySelectorAll('.step-dot').forEach(dot => {
+    const s = parseInt(dot.dataset.step);
+    dot.classList.remove('active','done');
+    if (s === currentStep) dot.classList.add('active');
+    else if (s < currentStep) dot.classList.add('done');
+    dot.innerHTML = s < currentStep 
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg><span class="step-label">${dot.querySelector('.step-label')?.textContent || ''}</span>`
+      : `${s}<span class="step-label">${dot.querySelector('.step-label')?.textContent || ''}</span>`;
+  });
+
+  document.querySelectorAll('.step-line').forEach((line, i) => {
+    line.classList.toggle('done', i + 1 < currentStep);
+  });
+
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  const activeSection = document.querySelector(`[data-section="${currentStep}"]`);
+  if (activeSection) activeSection.classList.add('active');
+
+  document.getElementById('btnBack').style.display = currentStep > 1 ? '' : 'none';
+  
+  const btnNext = document.getElementById('btnNext');
+  if (currentStep === totalSteps) {
+    btnNext.className = 'btn btn-submit';
+    btnNext.innerHTML = `Submit Request <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
+  } else {
+    btnNext.className = 'btn btn-next';
+    btnNext.innerHTML = `Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+  }
+}
+
+function buildSummary() {
+  const service = document.querySelector('.service-card.selected')?.dataset.service || '—';
+  const container = document.querySelector('.toggle-btn.active')?.textContent || '—';
+  const specials = [];
+  if (document.getElementById('hazmat').checked) specials.push('Hazmat/DG');
+  if (document.getElementById('tempControl').checked) specials.push('Reefer');
+  if (document.getElementById('oversized').checked) specials.push('Oversized');
+  if (document.getElementById('customsClear').checked) specials.push('Customs');
+
+  const rows = [
+    ['Service', service],
+    ['Container Size', container],
+    ['Pickup Date', document.getElementById('pickupDate').value || '—'],
+    ['Time Window', document.getElementById('timeWindow').selectedOptions[0]?.text || '—'],
+    ['Priority', document.getElementById('priority').value || '—'],
+    ['Pickup', document.getElementById('pickupLocation').value || '—'],
+    ['Delivery', document.getElementById('deliveryLocation').value || '—'],
+    ['Contact', document.getElementById('contactName').value || '—'],
+    ['Phone', document.getElementById('contactPhone').value || '—'],
+    ['Goods', document.getElementById('goodsDesc').value || '—'],
+    ['Qty / Wt / Vol', `${document.getElementById('qty').value || '—'} pcs · ${document.getElementById('weight').value || '—'} kg · ${document.getElementById('volume').value || '—'} CBM`],
+    ['Container #', document.getElementById('containerNo').value || '—'],
+    ['Token #', document.getElementById('tokenNo').value || '—'],
+    ['BOE #', document.getElementById('boeNo').value || '—'],
+    ['BL #', document.getElementById('blNo').value || '—'],
+    ['DO #', document.getElementById('doNo').value || '—'],
+    ['Vessel / Voyage', document.getElementById('vesselVoyage').value || '—'],
+    ['Shipping Line', document.getElementById('shippingLine').value || '—'],
+    ['Seal #', document.getElementById('sealNo').value || '—'],
+    ['HS Code', document.getElementById('hsCode').value || '—'],
+    ['Special', specials.length ? specials.join(', ') : 'None'],
+  ];
+
+  const docs = getUploadedDocs();
+  if (docs.length) {
+    rows.push(['Documents', docs.join('<br>')]);
+  } else {
+    rows.push(['Documents', 'None attached']);
+  }
+
+  document.getElementById('summaryContent').innerHTML = rows.map(([label, value]) =>
+    `<div class="summary-row"><span class="summary-label">${label}</span><span class="summary-value">${value}</span></div>`
+  ).join('');
+}
+
+function nextStep() {
+  if (currentStep === totalSteps) {
+    if (!document.getElementById('termsAgree').checked) {
+      alert('Please confirm the terms to submit.');
+      return;
+    }
+    submitForm();
+    return;
+  }
+  if (currentStep < totalSteps) {
+    currentStep++;
+    if (currentStep === 4) buildSummary();
+    updateStepper();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    updateStepper();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function submitForm() {
+  const ref = 'GT-' + new Date().toISOString().slice(2,10).replace(/-/g,'') + '-' + String(Math.floor(Math.random()*9999)+1).padStart(4,'0');
+  document.getElementById('refNumber').textContent = ref;
+  document.querySelector('.form-container .success-view').classList.add('show');
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('bottomBar').style.display = 'none';
+  document.querySelector('.stepper').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  currentStep = 1;
+  document.querySelector('.success-view').classList.remove('show');
+  document.getElementById('bottomBar').style.display = '';
+  document.querySelector('.stepper').style.display = '';
+  document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"])').forEach(i => i.value = '');
+  document.querySelectorAll('textarea').forEach(t => t.value = '');
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.querySelectorAll('.doc-row').forEach(r => {
+    r.classList.remove('has-file');
+    const status = r.querySelector('.doc-status');
+    if (status && !r.id.includes('Other')) status.textContent = 'Not uploaded';
+    const btn = r.querySelector('.doc-upload-btn');
+    if (btn) btn.childNodes[0].textContent = 'Upload ';
+  });
+  document.querySelectorAll('input[type="file"]').forEach(f => f.value = '');
+  updateStepper();
+}
+
+// Set default date to today
+document.getElementById('pickupDate').valueAsDate = new Date();
+
+// Init stepper labels
+const labels = ['Service', 'Route', 'Cargo', 'Review'];
+document.querySelectorAll('.step-dot').forEach((dot, i) => {
+  dot.innerHTML = `${i+1}<span class="step-label">${labels[i]}</span>`;
+});
+</script>
+
+</body>
+</html>
